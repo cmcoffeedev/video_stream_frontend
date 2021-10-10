@@ -1,8 +1,38 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
+import React from "react";
+import { v4 as uuidv4 } from 'uuid';
 
 export default function Home() {
+
+  React.useEffect(() => {
+    const fn = async () => {
+      const PeerJs = (await import('peerjs')).default;
+      // set it to state here
+
+      const peer = new PeerJs(uuidv4(), {
+        host: 'localhost',
+        port: 9000,
+        path: '/peerjs',
+
+      });
+
+      peer.on('connection', (conn) => {
+        conn.on('data', (data) => {
+
+          console.log(data);
+        });
+        conn.on('open', () => {
+          console.log("open called")
+          conn.send('hello!');
+        });
+      });
+
+    }
+    fn()
+  }, []); // empty array here ensures this is only executed once (when that component mounts).
+
   return (
     <div className={styles.container}>
       <Head>
